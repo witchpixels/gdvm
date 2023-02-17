@@ -1,28 +1,13 @@
-use regex::Regex;
+use crate::version_sourcing::tux_family::tux_family_version_source::download_godot_versions_from_tux_family;
 
-pub fn extract_godot_directory_versions(html_response: &String) -> Vec<String> {
-
-    let mut vec: Vec<String> = Vec::new();
-
-    let regex = Regex::new(r#"="([0-9]\.[0-9]\.?[0-9]?\.?[0-9]?)/""#).unwrap();
-    for capture in regex.captures_iter(&html_response) {
-        vec.push(capture[1].to_string());
-    }
-
-    return vec;
-}
+mod version_sourcing;
 
 fn main() {
-
-    let resp = reqwest::blocking::get("https://downloads.tuxfamily.org/godotengine/")
-        .unwrap()
-        .text()
-        .unwrap();
-
-    let versions = extract_godot_directory_versions(&resp);
-
-    for version in versions{
-        println!("found version {}", version);
+    let versions = download_godot_versions_from_tux_family();
+    for version in versions {
+        println!(
+            "{} {} {}",
+            version.version_tag, version.mono, version.download_url
+        );
     }
-
 }
